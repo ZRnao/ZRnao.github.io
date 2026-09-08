@@ -3,56 +3,363 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0d1117" />
   <title>電腦玩家工作室｜免費工具箱</title>
-  <meta name="description" content="電腦玩家工作室免費提供的實用線上計算工具。" />
+  <meta name="description" content="電腦玩家工作室免費提供的實用線上計算工具，包含貸款、利率、投資與退休試算。" />
   <style>
     :root {
       --bg: #0d1117;
+      --bg-soft: #111827;
       --card: #161b22;
-      --card-hover: #1f2937;
+      --card-hover: #1c2532;
       --text: #f8fafc;
       --muted: #94a3b8;
+      --muted-2: #64748b;
       --border: #30363d;
+      --border-hover: #475569;
       --accent: #58a6ff;
+      --accent-soft: rgba(88, 166, 255, .12);
+      --shadow: 0 14px 34px rgba(0, 0, 0, .24);
     }
+
     * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", Arial, sans-serif;
-      background: radial-gradient(circle at top, #111827 0, var(--bg) 42%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", "Microsoft JhengHei", Arial, sans-serif;
+      background:
+        radial-gradient(circle at 50% -10%, rgba(37, 99, 235, .14), transparent 32%),
+        radial-gradient(circle at 12% 12%, rgba(14, 165, 233, .06), transparent 25%),
+        var(--bg);
       color: var(--text);
       min-height: 100vh;
     }
-    .wrap { width: min(1100px, calc(100% - 28px)); margin: 0 auto; padding: 56px 0 36px; }
-    .hero { text-align: center; margin-bottom: 34px; }
-    .brand { display: inline-flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 7px 12px; background: rgba(22,27,34,.75); }
-    h1 { margin: 16px 0 10px; font-size: clamp(28px, 5vw, 44px); line-height: 1.15; }
-    .hero p { margin: 0 auto; max-width: 660px; color: var(--muted); line-height: 1.75; font-size: 15px; }
-    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+
+    .wrap {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 62px 0 38px;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 13px;
+      color: #b6c2d1;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 8px 14px;
+      background: rgba(22, 27, 34, .78);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 6px 18px rgba(0,0,0,.16);
+    }
+
+    h1 {
+      margin: 18px 0 11px;
+      font-size: clamp(32px, 5vw, 50px);
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+    }
+
+    .hero p {
+      margin: 0 auto;
+      max-width: 720px;
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    .search-panel {
+      max-width: 720px;
+      margin: 26px auto 38px;
+    }
+
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+      background: rgba(22, 27, 34, .92);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      box-shadow: var(--shadow);
+      transition: border-color .2s ease, box-shadow .2s ease;
+      overflow: hidden;
+    }
+
+    .search-box:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(88, 166, 255, .10), var(--shadow);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 17px;
+      font-size: 18px;
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    #toolSearch {
+      width: 100%;
+      height: 54px;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: var(--text);
+      font-size: 16px;
+      padding: 0 52px 0 50px;
+    }
+
+    #toolSearch::placeholder {
+      color: #6f7d90;
+    }
+
+    .clear-btn {
+      position: absolute;
+      right: 12px;
+      width: 32px;
+      height: 32px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      display: none;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .clear-btn:hover {
+      background: rgba(148, 163, 184, .10);
+      color: var(--text);
+    }
+
+    .search-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 9px;
+      padding: 0 3px;
+      color: var(--muted-2);
+      font-size: 12px;
+    }
+
+    .search-meta strong {
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
     .card {
-      display: block;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-height: 238px;
       color: inherit;
       text-decoration: none;
-      background: linear-gradient(180deg, rgba(31,41,55,.82), rgba(22,27,34,.96));
+      background:
+        linear-gradient(180deg, rgba(31, 41, 55, .78), rgba(22, 27, 34, .97));
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 22px;
-      box-shadow: 0 10px 26px rgba(0,0,0,.18);
-      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, .18);
+      transition:
+        transform .18s ease,
+        border-color .18s ease,
+        background .18s ease,
+        box-shadow .18s ease;
+      overflow: hidden;
     }
-    .card:hover { transform: translateY(-3px); border-color: #4b5563; background: var(--card-hover); }
-    .icon { font-size: 28px; margin-bottom: 12px; }
-    .title { font-size: 19px; font-weight: 750; margin-bottom: 8px; }
-    .desc { color: var(--muted); font-size: 14px; line-height: 1.65; min-height: 46px; }
-    .go { margin-top: 15px; color: var(--accent); font-weight: 700; font-size: 14px; }
-    footer { text-align: center; color: var(--muted); font-size: 13px; padding: 30px 0 6px; }
-    footer a { color: inherit; text-decoration: none; font-weight: 700; }
-    footer a:hover { color: var(--accent); text-decoration: underline; }
-    @media (max-width: 720px) {
-      .wrap { width: min(100% - 20px, 1100px); padding-top: 32px; }
-      .grid { grid-template-columns: 1fr; gap: 14px; }
-      .card { padding: 18px; }
-      .desc { min-height: auto; }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto auto 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(88,166,255,.55), transparent);
+      opacity: 0;
+      transition: opacity .18s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-hover);
+      background: var(--card-hover);
+      box-shadow: 0 18px 38px rgba(0,0,0,.28);
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card:focus-visible {
+      outline: 3px solid rgba(88, 166, 255, .42);
+      outline-offset: 3px;
+    }
+
+    .icon-wrap {
+      width: 48px;
+      height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(88, 166, 255, .14);
+      margin-bottom: 18px;
+    }
+
+    .icon {
+      font-size: 26px;
+      line-height: 1;
+    }
+
+    .title {
+      font-size: 20px;
+      font-weight: 760;
+      margin-bottom: 9px;
+      letter-spacing: -0.01em;
+    }
+
+    .desc {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.72;
+      flex: 1;
+    }
+
+    .go {
+      margin-top: 20px;
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card:hover .go {
+      gap: 10px;
+    }
+
+    .no-results {
+      display: none;
+      text-align: center;
+      border: 1px dashed var(--border);
+      border-radius: 18px;
+      padding: 38px 18px;
+      color: var(--muted);
+      background: rgba(22, 27, 34, .55);
+    }
+
+    .no-results .emoji {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .no-results strong {
+      display: block;
+      color: var(--text);
+      margin-bottom: 6px;
+      font-size: 16px;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      padding: 34px 0 6px;
+    }
+
+    footer a {
+      color: inherit;
+      text-decoration: none;
+      font-weight: 700;
+      transition: color .18s ease;
+    }
+
+    footer a:hover {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
+    @media (max-width: 760px) {
+      .wrap {
+        width: min(100% - 20px, 1180px);
+        padding-top: 34px;
+      }
+
+      .hero {
+        margin-bottom: 22px;
+      }
+
+      h1 {
+        font-size: clamp(30px, 10vw, 42px);
+      }
+
+      .hero p {
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      .search-panel {
+        margin: 22px auto 28px;
+      }
+
+      #toolSearch {
+        height: 52px;
+        font-size: 16px;
+      }
+
+      .search-meta {
+        font-size: 11px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      .card {
+        min-height: 0;
+        padding: 19px;
+        border-radius: 15px;
+      }
+
+      .icon-wrap {
+        width: 44px;
+        height: 44px;
+        margin-bottom: 14px;
+      }
+
+      .title {
+        font-size: 18px;
+      }
+
+      .go {
+        margin-top: 16px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        scroll-behavior: auto !important;
+        transition: none !important;
+      }
     }
   </style>
 </head>
@@ -64,46 +371,133 @@
       <p>整理常用的貸款、利率、投資與退休試算工具。免安裝、開啟即可使用，手機與電腦皆可操作。</p>
     </section>
 
-    <section class="grid" aria-label="工具列表">
-      <a class="card" href="./loan-arbitrage/">
-        <div class="icon">💰</div>
+    <section class="search-panel" aria-label="搜尋工具">
+      <div class="search-box">
+        <span class="search-icon" aria-hidden="true">⌕</span>
+        <input
+          id="toolSearch"
+          type="search"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="搜尋程式名稱，例如：貸款、退休、利率"
+          aria-label="搜尋程式名稱"
+        />
+        <button id="clearSearch" class="clear-btn" type="button" aria-label="清除搜尋">×</button>
+      </div>
+      <div class="search-meta">
+        <span>直接輸入關鍵字即可篩選</span>
+        <span>顯示 <strong id="visibleCount">5</strong> / <strong id="totalCount">5</strong> 個工具</span>
+      </div>
+    </section>
+
+    <section id="toolGrid" class="grid" aria-label="工具列表">
+      <a class="card" href="./loan-arbitrage/" data-tool-name="貸款套利分析計算機">
+        <div class="icon-wrap"><div class="icon">💰</div></div>
         <div class="title">貸款套利分析計算機</div>
         <div class="desc">模擬貸款投入投資後的月付、資金提領、本金變化與期滿淨資產。</div>
-        <div class="go">開始使用 →</div>
+        <div class="go">開始使用 <span>→</span></div>
       </a>
 
-      <a class="card" href="./loan-calculator/">
-        <div class="icon">🏦</div>
+      <a class="card" href="./loan-calculator/" data-tool-name="智慧貸款利息計算機">
+        <div class="icon-wrap"><div class="icon">🏦</div></div>
         <div class="title">智慧貸款利息計算機</div>
         <div class="desc">試算本息平均攤還、每月月付、總利息、剩餘本金與逐期還款明細。</div>
-        <div class="go">開始使用 →</div>
+        <div class="go">開始使用 <span>→</span></div>
       </a>
 
-      <a class="card" href="./loop-loan/">
-        <div class="icon">🔁</div>
+      <a class="card" href="./loop-loan/" data-tool-name="循環貸款試算器">
+        <div class="icon-wrap"><div class="icon">🔁</div></div>
         <div class="title">循環貸款試算器</div>
         <div class="desc">試算循環借貸後的本金放大、借款成本、年收益與各輪明細。</div>
-        <div class="go">開始使用 →</div>
+        <div class="go">開始使用 <span>→</span></div>
       </a>
 
-      <a class="card" href="./retirement/">
-        <div class="icon">📈</div>
+      <a class="card" href="./retirement/" data-tool-name="終極複利退休金計算機">
+        <div class="icon-wrap"><div class="icon">📈</div></div>
         <div class="title">終極複利退休金計算機</div>
         <div class="desc">依年齡、每月投入與年化報酬率，估算退休時總資產與複利收益。</div>
-        <div class="go">開始使用 →</div>
+        <div class="go">開始使用 <span>→</span></div>
       </a>
 
-      <a class="card" href="./daily-rate/">
-        <div class="icon">🧮</div>
+      <a class="card" href="./daily-rate/" data-tool-name="日利率轉年化報酬率計算機">
+        <div class="icon-wrap"><div class="icon">🧮</div></div>
         <div class="title">日利率轉年化報酬率計算機</div>
         <div class="desc">輸入每日利率，即時計算單利 APR 與每日複利 APY。</div>
-        <div class="go">開始使用 →</div>
+        <div class="go">開始使用 <span>→</span></div>
       </a>
     </section>
 
+    <section id="noResults" class="no-results" aria-live="polite">
+      <div class="emoji">🔎</div>
+      <strong>找不到符合的工具</strong>
+      <span>請換一個程式名稱或關鍵字再試一次。</span>
+    </section>
+
     <footer>
-      <a href="https://line.me/ti/p/8ME9dv69et" target="_blank" rel="noopener noreferrer">© 電腦玩家工作室｜免費提供使用</a>
+      <a href="https://line.me/ti/p/8ME9dv69et" target="_blank" rel="noopener noreferrer">
+        © 電腦玩家工作室｜免費提供使用
+      </a>
     </footer>
   </main>
+
+  <script>
+    const searchInput = document.getElementById('toolSearch');
+    const clearButton = document.getElementById('clearSearch');
+    const cards = Array.from(document.querySelectorAll('.card'));
+    const visibleCount = document.getElementById('visibleCount');
+    const totalCount = document.getElementById('totalCount');
+    const noResults = document.getElementById('noResults');
+    const toolGrid = document.getElementById('toolGrid');
+
+    totalCount.textContent = cards.length;
+    visibleCount.textContent = cards.length;
+
+    function normalizeText(text) {
+      return text
+        .toLowerCase()
+        .replace(/\s+/g, '')
+        .trim();
+    }
+
+    function filterTools() {
+      const keyword = normalizeText(searchInput.value);
+      let shown = 0;
+
+      cards.forEach(card => {
+        const toolName = normalizeText(card.dataset.toolName || '');
+        const matched = !keyword || toolName.includes(keyword);
+        card.style.display = matched ? 'flex' : 'none';
+        if (matched) shown++;
+      });
+
+      visibleCount.textContent = shown;
+      clearButton.style.display = searchInput.value ? 'block' : 'none';
+
+      const hasResults = shown > 0;
+      toolGrid.style.display = hasResults ? 'grid' : 'none';
+      noResults.style.display = hasResults ? 'none' : 'block';
+    }
+
+    searchInput.addEventListener('input', filterTools);
+
+    clearButton.addEventListener('click', () => {
+      searchInput.value = '';
+      filterTools();
+      searchInput.focus();
+    });
+
+    document.addEventListener('keydown', event => {
+      if (event.key === '/' && document.activeElement !== searchInput) {
+        event.preventDefault();
+        searchInput.focus();
+      }
+
+      if (event.key === 'Escape' && document.activeElement === searchInput) {
+        searchInput.value = '';
+        filterTools();
+        searchInput.blur();
+      }
+    });
+  </script>
 </body>
 </html>
