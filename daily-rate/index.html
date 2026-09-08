@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日利率轉年化報酬率計算機</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .calculator-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 28px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+        h2 {
+            margin: 0 0 20px 0;
+            font-size: 20px;
+            color: #38bdf8;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        input {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 12px 36px 12px 14px;
+            font-size: 18px;
+            color: #ffffff;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input:focus {
+            border-color: #38bdf8;
+        }
+        .unit-badge {
+            position: absolute;
+            right: 14px;
+            color: #64748b;
+            font-weight: bold;
+        }
+        .result-box {
+            background: #0f172a;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 24px;
+            border-left: 4px solid #38bdf8;
+        }
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+        }
+        .result-row:not(:last-child) {
+            border-bottom: 1px dashed #334155;
+        }
+        .result-label {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+        .result-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #4ade80;
+        }
+        .result-value.apy {
+            color: #facc15;
+        }
+        .note {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 16px;
+            line-height: 1.5;
+        }
+
+        .studio-footer {
+            text-align: center;
+            margin-top: 24px;
+            padding: 12px 0 4px;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+        .studio-footer a {
+            color: inherit;
+            text-decoration: none;
+            font-weight: 700;
+        }
+        .studio-footer a:hover {
+            color: #60a5fa;
+            text-decoration: underline;
+        }
+
+        /* 介面優化 */
+        input[type="number"] {
+            min-height: 48px;
+            padding-right: 52px;
+            transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+        }
+
+        input[type="number"]:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, .16);
+        }
+
+        .unit-badge {
+            right: 34px; /* 避開瀏覽器原生上下箭頭 */
+            background: #0f172a;
+            padding-left: 6px;
+            pointer-events: none;
+        }
+
+        .helper-text {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                align-items: flex-start;
+                padding: 14px;
+            }
+
+            .calculator-card {
+                padding: 20px 16px;
+                border-radius: 14px;
+            }
+
+            h2 {
+                font-size: 18px;
+                line-height: 1.4;
+            }
+
+            .result-row {
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .result-label {
+                line-height: 1.45;
+            }
+
+            .result-value {
+                white-space: nowrap;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="calculator-card">
+    <h2>📈 日利率 ➜ 年化報酬率換算</h2>
+
+    <div class="form-group">
+        <label for="dailyRate">輸入日利率 (%)</label>
+        <div class="input-wrapper">
+            <input type="number" id="dailyRate" step="0.0001" min="0" inputmode="decimal" placeholder="例如：0.02" autofocus>
+            <span class="unit-badge">%</span>
+        </div>
+        <div class="helper-text">輸入「每日利率」，系統會即時計算單利 APR 與每日複利 APY。</div>
+    </div>
+
+    <div class="result-box">
+        <div class="result-row">
+            <span class="result-label">單利年化 (APR / 365天)</span>
+            <span class="result-value" id="aprResult">0.00%</span>
+        </div>
+        <div class="result-row">
+            <span class="result-label">複利年化 (APY / 每日複利)</span>
+            <span class="result-value apy" id="apyResult">0.00%</span>
+        </div>
+    </div>
+
+    <div class="note">
+        * <b>APR（單利）</b>：日利率 × 365<br>
+        * <b>APY（複利）</b>：(1 + 日利率)^365 - 1（假設收益每日再投入）
+    </div>
+
+<div class="studio-footer">
+  <a href="https://line.me/ti/p/8ME9dv69et" target="_blank" rel="noopener noreferrer">
+    © 電腦玩家工作室｜免費提供使用
+  </a>
+</div>
+
+</div>
+
+<script>
+    const dailyRateInput = document.getElementById('dailyRate');
+    const aprResult = document.getElementById('aprResult');
+    const apyResult = document.getElementById('apyResult');
+
+    function calculate() {
+        const ratePercent = parseFloat(dailyRateInput.value);
+
+        if (isNaN(ratePercent) || ratePercent <= 0) {
+            aprResult.textContent = '0.00%';
+            apyResult.textContent = '0.00%';
+            return;
+        }
+
+        const r = ratePercent / 100;
+
+        // 單利年化 APR
+        const apr = r * 365 * 100;
+        // 每日複利年化 APY
+        const apy = (Math.pow(1 + r, 365) - 1) * 100;
+
+        aprResult.textContent = apr.toFixed(2) + '%';
+        apyResult.textContent = apy.toFixed(2) + '%';
+    }
+
+    dailyRateInput.addEventListener('input', calculate);
+</script>
+
+</body>
+</html>

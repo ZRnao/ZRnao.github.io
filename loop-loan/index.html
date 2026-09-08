@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>循環貸款試算器</title>
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --border: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            padding: 30px 15px;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            color: #60a5fa;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .card-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group input {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 11px 48px 11px 12px;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .input-group input[type="text"] {
+            padding-right: 12px;
+        }
+
+        .input-group input[type="number"]::-webkit-inner-spin-button,
+        .input-group input[type="number"]::-webkit-outer-spin-button {
+            margin-right: 2px;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+        }
+
+        .input-group span {
+            position: absolute;
+            right: 30px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            pointer-events: none;
+            background: #0f172a;
+            padding-left: 6px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.95rem;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-item .label {
+            color: var(--text-muted);
+        }
+
+        .result-item .value {
+            font-weight: 600;
+        }
+
+        .highlight-card {
+            background: linear-gradient(145deg, #1e293b, #1e3a8a);
+            border-color: #3b82f6;
+            margin-top: 20px;
+        }
+
+        .highlight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            text-align: center;
+        }
+
+        .highlight-box {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .highlight-box .box-title {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .highlight-box .box-value {
+            font-size: 1.35rem;
+            font-weight: 700;
+        }
+
+        .text-green { color: var(--success); }
+        .text-red { color: var(--danger); }
+        .text-blue { color: #60a5fa; }
+        .text-orange { color: var(--warning); }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.88rem;
+        }
+
+        th, td {
+            text-align: right;
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th:first-child, td:first-child {
+            text-align: left;
+        }
+
+        th {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .tag-info { background: #1e3a8a; color: #93c5fd; }
+
+        .studio-footer {
+            text-align: center;
+            margin-top: 24px;
+            padding: 12px 0 4px;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+        .studio-footer a {
+            color: inherit;
+            text-decoration: none;
+            font-weight: 700;
+        }
+        .studio-footer a:hover {
+            color: #60a5fa;
+            text-decoration: underline;
+        }
+
+        .form-hint {
+            margin-top: 6px;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            line-height: 1.45;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        input::placeholder {
+            color: #64748b;
+        }
+
+        @media (max-width: 520px) {
+            body {
+                padding: 18px 10px;
+            }
+
+            .card {
+                padding: 16px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .highlight-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>循環貸款試算器</h1>
+        <p>適用各種資產與貨幣單位，試算循環借貸後的本金放大、利息成本與淨收益</p>
+    </div>
+
+    <div class="grid">
+        <!-- 參數設定面板 -->
+        <div class="card">
+            <div class="card-title">
+                <span>參數設定</span>
+                <span class="tag tag-info">即時計算</span>
+            </div>
+
+            <div class="form-group">
+                <label>初始本金</label>
+                <div class="input-group">
+                    <input type="number" id="principal" value="100000" step="1000" style="padding-right:12px;">
+                    
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>資產年化收益率</label>
+                <div class="input-group">
+                    <input type="number" id="supplyApy" value="5.25" step="0.01">
+                    <span>%</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>借款年利率</label>
+                <div class="input-group">
+                    <input type="number" id="borrowApy" value="3.28" step="0.01">
+                    <span>%</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>每次借款比例 (LTV)</label>
+                <div class="input-group">
+                    <input type="number" id="ltv" value="50" min="1" max="90" step="1">
+                    <span>%</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>循環次數</label>
+                <div class="input-group">
+                    <input type="number" id="loops" value="1" min="1" max="20" step="1">
+                    <span>次</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 試算成果面板 -->
+        <div class="card">
+            <div class="card-title">
+                <span>試算摘要結果</span>
+            </div>
+
+            <div class="result-item">
+                <span class="label">淨利差（收益率 - 借款利率）</span>
+                <span class="value text-blue" id="resSpread">1.97 %</span>
+            </div>
+            <div class="result-item">
+                <span class="label">不循環時的年收益</span>
+                <span class="value" id="resOriginalYield">5,250.00</span>
+            </div>
+            <div class="result-item">
+                <span class="label">循環後總計息本金</span>
+                <span class="value text-blue" id="resTotalDeposited">150,000.00</span>
+            </div>
+            <div class="result-item">
+                <span class="label">累計總借款金額</span>
+                <span class="value text-orange" id="resTotalBorrowed">50,000.00</span>
+            </div>
+            <div class="result-item">
+                <span class="label">總毛收益 / 年</span>
+                <span class="value text-green" id="resGrossYield">+ 7,875.00</span>
+            </div>
+            <div class="result-item">
+                <span class="label">借款利息支出 / 年</span>
+                <span class="value text-red" id="resInterestCost">- 1,640.00</span>
+            </div>
+            <div class="result-item">
+                <span class="label">循環額外增加淨收益 / 年</span>
+                <span class="value text-green" id="resExtraProfit">+ 985.00</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 重點數據卡片 -->
+    <div class="card highlight-card">
+        <div class="highlight-grid">
+            <div class="highlight-box">
+                <div class="box-title">循環後年淨收益</div>
+                <div class="box-value text-green" id="boxNetYield">6,235.00</div>
+            </div>
+            <div class="highlight-box">
+                <div class="box-title">實質本金年化報酬率</div>
+                <div class="box-value text-blue" id="boxEffectiveApy">6.24 %</div>
+            </div>
+            <div class="highlight-box">
+                <div class="box-title">本金放大倍數</div>
+                <div class="box-value text-orange" id="boxLeverage">1.50 x</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 每輪循環明細拆解 -->
+    <div class="card" style="margin-top: 20px;">
+        <div class="card-title">
+            <span>各輪循環拆解明細</span>
+        </div>
+        <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>輪次</th>
+                    <th>該輪存入</th>
+                    <th>累計計息本金</th>
+                    <th>該輪借出</th>
+                    <th>累計總債務</th>
+                </tr>
+            </thead>
+            <tbody id="breakdownBody">
+                <!-- 動態由 JavaScript 產生 -->
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+<div class="studio-footer">
+  <a href="https://line.me/ti/p/8ME9dv69et" target="_blank" rel="noopener noreferrer">
+    © 電腦玩家工作室｜免費提供使用
+  </a>
+</div>
+
+</div>
+
+<script>
+    function formatNum(num) {
+        return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function calculate() {
+        const principal = parseFloat(document.getElementById('principal').value) || 0;
+        const supplyApy = parseFloat(document.getElementById('supplyApy').value) || 0;
+        const borrowApy = parseFloat(document.getElementById('borrowApy').value) || 0;
+        const ltv = (parseFloat(document.getElementById('ltv').value) || 0) / 100;
+        const loops = parseInt(document.getElementById('loops').value) || 1;
+
+        const spread = supplyApy - borrowApy;
+        document.getElementById('resSpread').textContent = spread.toFixed(2) + ' %';
+        document.getElementById('resOriginalYield').textContent = formatNum(principal * (supplyApy / 100));
+
+        let totalDeposited = principal;
+        let totalBorrowed = 0;
+        let currentCollateral = principal;
+
+        let tableHtml = `
+            <tr>
+                <td>第 0 輪（初始本金）</td>
+                <td>${formatNum(principal)}</td>
+                <td>${formatNum(totalDeposited)}</td>
+                <td>-</td>
+                <td>0.00</td>
+            </tr>
+        `;
+
+        for (let i = 1; i <= loops; i++) {
+            let borrowAmount = currentCollateral * ltv;
+            if (borrowAmount <= 0) break;
+            
+            totalBorrowed += borrowAmount;
+            totalDeposited += borrowAmount;
+            currentCollateral = borrowAmount;
+
+            tableHtml += `
+                <tr>
+                    <td>第 ${i} 輪循環</td>
+                    <td>+ ${formatNum(borrowAmount)}</td>
+                    <td>${formatNum(totalDeposited)}</td>
+                    <td>+ ${formatNum(borrowAmount)}</td>
+                    <td>${formatNum(totalBorrowed)}</td>
+                </tr>
+            `;
+        }
+
+        document.getElementById('breakdownBody').innerHTML = tableHtml;
+
+        const grossYield = totalDeposited * (supplyApy / 100);
+        const interestCost = totalBorrowed * (borrowApy / 100);
+        const netYield = grossYield - interestCost;
+        const originalYield = principal * (supplyApy / 100);
+        const extraProfit = netYield - originalYield;
+        const effectiveApy = principal > 0 ? (netYield / principal) * 100 : 0;
+        const leverage = principal > 0 ? (totalDeposited / principal) : 1;
+
+        document.getElementById('resTotalDeposited').textContent = formatNum(totalDeposited);
+        document.getElementById('resTotalBorrowed').textContent = formatNum(totalBorrowed);
+        document.getElementById('resGrossYield').textContent = '+ ' + formatNum(grossYield);
+        document.getElementById('resInterestCost').textContent = '- ' + formatNum(interestCost);
+        document.getElementById('resExtraProfit').textContent = (extraProfit >= 0 ? '+ ' : '') + formatNum(extraProfit);
+
+        document.getElementById('boxNetYield').textContent = formatNum(netYield);
+        document.getElementById('boxEffectiveApy').textContent = effectiveApy.toFixed(2) + ' %';
+        document.getElementById('boxLeverage').textContent = leverage.toFixed(2) + ' x';
+    }
+
+    // 監聽所有輸入框變更
+    const inputs = document.querySelectorAll('input');
+    inputs.forEach(input => {
+        input.addEventListener('input', calculate);
+    });
+
+    // 頁面載入時執行初次計算
+    calculate();
+</script>
+
+</body>
+</html>

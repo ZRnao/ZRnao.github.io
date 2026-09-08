@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>電腦玩家工作室｜免費工具箱</title>
+  <meta name="description" content="電腦玩家工作室免費提供的實用線上計算工具。" />
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card: #161b22;
+      --card-hover: #1f2937;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: #30363d;
+      --accent: #58a6ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", Arial, sans-serif;
+      background: radial-gradient(circle at top, #111827 0, var(--bg) 42%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .wrap { width: min(1100px, calc(100% - 28px)); margin: 0 auto; padding: 56px 0 36px; }
+    .hero { text-align: center; margin-bottom: 34px; }
+    .brand { display: inline-flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 7px 12px; background: rgba(22,27,34,.75); }
+    h1 { margin: 16px 0 10px; font-size: clamp(28px, 5vw, 44px); line-height: 1.15; }
+    .hero p { margin: 0 auto; max-width: 660px; color: var(--muted); line-height: 1.75; font-size: 15px; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .card {
+      display: block;
+      color: inherit;
+      text-decoration: none;
+      background: linear-gradient(180deg, rgba(31,41,55,.82), rgba(22,27,34,.96));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 10px 26px rgba(0,0,0,.18);
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+    .card:hover { transform: translateY(-3px); border-color: #4b5563; background: var(--card-hover); }
+    .icon { font-size: 28px; margin-bottom: 12px; }
+    .title { font-size: 19px; font-weight: 750; margin-bottom: 8px; }
+    .desc { color: var(--muted); font-size: 14px; line-height: 1.65; min-height: 46px; }
+    .go { margin-top: 15px; color: var(--accent); font-weight: 700; font-size: 14px; }
+    footer { text-align: center; color: var(--muted); font-size: 13px; padding: 30px 0 6px; }
+    footer a { color: inherit; text-decoration: none; font-weight: 700; }
+    footer a:hover { color: var(--accent); text-decoration: underline; }
+    @media (max-width: 720px) {
+      .wrap { width: min(100% - 20px, 1100px); padding-top: 32px; }
+      .grid { grid-template-columns: 1fr; gap: 14px; }
+      .card { padding: 18px; }
+      .desc { min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <div class="brand">🧰 電腦玩家工作室</div>
+      <h1>免費線上工具箱</h1>
+      <p>整理常用的貸款、利率、投資與退休試算工具。免安裝、開啟即可使用，手機與電腦皆可操作。</p>
+    </section>
+
+    <section class="grid" aria-label="工具列表">
+      <a class="card" href="./loan-arbitrage/">
+        <div class="icon">💰</div>
+        <div class="title">貸款套利分析計算機</div>
+        <div class="desc">模擬貸款投入投資後的月付、資金提領、本金變化與期滿淨資產。</div>
+        <div class="go">開始使用 →</div>
+      </a>
+
+      <a class="card" href="./loan-calculator/">
+        <div class="icon">🏦</div>
+        <div class="title">智慧貸款利息計算機</div>
+        <div class="desc">試算本息平均攤還、每月月付、總利息、剩餘本金與逐期還款明細。</div>
+        <div class="go">開始使用 →</div>
+      </a>
+
+      <a class="card" href="./loop-loan/">
+        <div class="icon">🔁</div>
+        <div class="title">循環貸款試算器</div>
+        <div class="desc">試算循環借貸後的本金放大、借款成本、年收益與各輪明細。</div>
+        <div class="go">開始使用 →</div>
+      </a>
+
+      <a class="card" href="./retirement/">
+        <div class="icon">📈</div>
+        <div class="title">終極複利退休金計算機</div>
+        <div class="desc">依年齡、每月投入與年化報酬率，估算退休時總資產與複利收益。</div>
+        <div class="go">開始使用 →</div>
+      </a>
+
+      <a class="card" href="./daily-rate/">
+        <div class="icon">🧮</div>
+        <div class="title">日利率轉年化報酬率計算機</div>
+        <div class="desc">輸入每日利率，即時計算單利 APR 與每日複利 APY。</div>
+        <div class="go">開始使用 →</div>
+      </a>
+    </section>
+
+    <footer>
+      <a href="https://line.me/ti/p/8ME9dv69et" target="_blank" rel="noopener noreferrer">© 電腦玩家工作室｜免費提供使用</a>
+    </footer>
+  </main>
+</body>
+</html>

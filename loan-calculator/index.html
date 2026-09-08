@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧貸款利息計算機 (一段式)</title>
+    <style>
+        :root {
+            --primary-color: #2b6cb0;
+            --bg-color: #f7fafc;
+            --card-bg: #ffffff;
+            --text-color: #2d3748;
+            --border-color: #e2e8f0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+        h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        @media (min-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        .card {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background-color: #2c5282;
+        }
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        .result-value {
+            font-weight: bold;
+            color: #1a202c;
+        }
+        .highlight {
+            color: #e53e3e;
+            font-size: 18px;
+        }
+        .table-container {
+            margin-top: 30px;
+            overflow-x: auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        th {
+            background-color: #edf2f7;
+            color: #4a5568;
+            font-weight: 600;
+        }
+        tr:hover {
+            background-color: #f7fafc;
+        }
+
+        .studio-footer {
+            text-align: center;
+            margin-top: 24px;
+            padding: 12px 0 4px;
+            font-size: 14px;
+            color: #718096;
+        }
+        .studio-footer a {
+            color: inherit;
+            text-decoration: none;
+            font-weight: 700;
+        }
+        .studio-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* 介面與手機版優化 */
+        input {
+            min-height: 44px;
+            transition: border-color .2s ease, box-shadow .2s ease;
+        }
+
+        .helper-text {
+            margin-top: 6px;
+            font-size: 12px;
+            line-height: 1.45;
+            color: #718096;
+        }
+
+        .table-container {
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #detailTable {
+            min-width: 720px;
+        }
+
+        #detailTable thead th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 12px;
+            }
+
+            h2 {
+                font-size: 22px;
+                margin-bottom: 20px;
+            }
+
+            .card {
+                padding: 18px 16px;
+                border-radius: 10px;
+            }
+
+            .grid {
+                gap: 14px;
+            }
+
+            .result-item {
+                gap: 12px;
+                align-items: flex-start;
+                flex-wrap: wrap;
+            }
+
+            .result-value {
+                margin-left: auto;
+                text-align: right;
+            }
+
+            .table-container {
+                margin-top: 18px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>智慧貸款利息計算機 (一段式)</h2>
+    
+    <div class="grid">
+        <!-- 輸入面板 -->
+        <div class="card">
+            <h3 style="margin-top:0; color:#4a5568;">1. 輸入貸款條件</h3>
+            <div class="form-group">
+                <label for="loanAmount">貸款金額 (新台幣 元)</label>
+                <input type="number" id="loanAmount" value="5000000" min="0" step="1000" inputmode="numeric" placeholder="例如：5000000">
+            </div>
+            <div class="form-group">
+                <label for="interestRate">年利率 (%)</label>
+                <input type="number" id="interestRate" step="0.01" min="0" value="2.5" inputmode="decimal" placeholder="例如：2.5"><div class="helper-text">請填銀行公告的年利率，例如 2.5 代表 2.5%。</div>
+            </div>
+            <div class="form-group">
+                <label for="loanTerm">貸款期數 (月)</label>
+                <input type="number" id="loanTerm" value="84" min="1" step="1" inputmode="numeric" placeholder="例如：84">
+            </div>
+            <div class="form-group">
+                <label for="fee">開辦費用 / 手續費 (元)</label>
+                <input type="number" id="fee" value="3000" min="0" step="1" inputmode="numeric" placeholder="例如：3000">
+            </div>
+            <div class="form-group">
+                <label for="paidPeriods">已還款期數 (月) <span style="font-weight:normal; color:#718096;">*用來計算已還數據</span></label>
+                <input type="number" id="paidPeriods" value="6" min="0" step="1" inputmode="numeric" placeholder="例如：6"><div class="helper-text">用來估算目前已繳本金、利息與剩餘本金。</div>
+            </div>
+            <button onclick="calculateLoan()">開始計算</button>
+        </div>
+
+        <!-- 結果面板 -->
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <h3 style="margin-top:0; color:#4a5568;">2. 計算結果摘要</h3>
+                <div class="result-item">
+                    <span>每月月付金（本金＋利息）:</span>
+                    <span class="result-value highlight" id="resMonthlyPay">$ 0</span>
+                </div>
+                <div class="result-item">
+                    <span>首期利息（第 1 個月）:</span>
+                    <span class="result-value" id="resFirstMonthInterest">$ 0</span>
+                </div>
+                <div class="result-item">
+                    <span>總應還利息:</span>
+                    <span class="result-value" id="resTotalInterest">$ 0</span>
+                </div>
+                <div class="result-item">
+                    <span>總還款金額（本金＋利息＋手續費）:</span>
+                    <span class="result-value" id="resTotalCost">$ 0</span>
+                </div>
+                <div class="result-item" style="border-top: 2px dashed #cbd5e0; margin-top: 10px; padding-top: 15px;">
+                    <span>已還｜累計還款總額:</span>
+                    <span class="result-value" style="color:#2b6cb0;" id="resPaidTotal">$ 0</span>
+                </div>
+                <div class="result-item">
+                    <span>已還｜累計已繳利息:</span>
+                    <span class="result-value" style="color:#2b6cb0;" id="resPaidInterest">$ 0</span>
+                </div>
+                <div class="result-item">
+                    <span>剩餘｜未還本金:</span>
+                    <span class="result-value" style="color:#319795;" id="resRemainingPrincipal">$ 0</span>
+                </div>
+            </div>
+            <div style="font-size: 12px; color:#a0aec0; margin-top: 15px;">
+                * 註：本計算機採用「本息平均攤還法」公式進行計算，實質每月利息會隨本金減少而逐期遞減。
+            </div>
+        </div>
+    </div>
+
+    <!-- 攤還明細表 -->
+    <div class="table-container" id="detailTableContainer" style="display:none;">
+        <h3 style="padding: 20px 16px 0 16px; margin: 0; color:#4a5568;">3. 每期還款明細</h3>
+        <table id="detailTable">
+            <thead>
+                <tr>
+                    <th>期數</th>
+                    <th>本期月付金</th>
+                    <th>償還本金</th>
+                    <th>償還利息</th>
+                    <th>剩餘本金餘額</th>
+                    <th>狀態</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 動態插入 -->
+            </tbody>
+        </table>
+    </div>
+
+<div class="studio-footer">
+  <a href="https://line.me/ti/p/8ME9dv69et" target="_blank" rel="noopener noreferrer">
+    © 電腦玩家工作室｜免費提供使用
+  </a>
+</div>
+
+</div>
+
+<script>
+    function calculateLoan() {
+        // 讀取輸入值
+        const amount = parseFloat(document.getElementById('loanAmount').value) || 0;
+        const annualRate = parseFloat(document.getElementById('interestRate').value) || 0;
+        const periods = parseInt(document.getElementById('loanTerm').value) || 0;
+        const fee = parseFloat(document.getElementById('fee').value) || 0;
+        const paidPeriods = parseInt(document.getElementById('paidPeriods').value) || 0;
+
+        if (amount <= 0 || annualRate <= 0 || periods <= 0) {
+            alert('請輸入正確的貸款金額、利率及期數！');
+            return;
+        }
+
+        // 月利率
+        const monthlyRate = (annualRate / 12) / 100;
+
+        // 本息平均攤還公式：每月應付本息金額
+        // 每月月付金 = [貸款本金 × 月利率 × (1+月利率)^期數] ÷ [(1+月利率)^期數 - 1]
+        const monthlyPayment = (amount * monthlyRate * Math.pow(1 + monthlyRate, periods)) / (Math.pow(1 + monthlyRate, periods) - 1);
+        
+        let remainingPrincipal = amount;
+        let totalInterest = 0;
+        let paidTotal = 0;
+        let paidInterest = 0;
+        let firstMonthInterest = 0;
+
+        // 清空並準備表格
+        const tbody = document.querySelector('#detailTable tbody');
+        tbody.innerHTML = '';
+
+        // 逐期計算明細
+        for (let i = 1; i <= periods; i++) {
+            let interestPayment = remainingPrincipal * monthlyRate; // 本期利息
+            let principalPayment = monthlyPayment - interestPayment; // 本期本金
+
+            if (i === 1) {
+                firstMonthInterest = interestPayment;
+            }
+
+            totalInterest += interestPayment;
+
+            // 統計已還款數據
+            if (i <= paidPeriods) {
+                paidTotal += monthlyPayment;
+                paidInterest += interestPayment;
+            }
+
+            remainingPrincipal -= principalPayment;
+            // 防呆，最後一期餘額歸零
+            if (i === periods) {
+                remainingPrincipal = 0;
+            }
+
+            // 渲染表格行
+            const tr = document.createElement('tr');
+            if (i <= paidPeriods) {
+                tr.style.backgroundColor = '#ebf8ff'; // 已還款期數給予藍底
+            }
+            tr.innerHTML = `
+                <td>第 ${i} 期</td>
+                <td>$ ${Math.round(monthlyPayment).toLocaleString()}</td>
+                <td>$ ${Math.round(principalPayment).toLocaleString()}</td>
+                <td>$ ${Math.round(interestPayment).toLocaleString()}</td>
+                <td>$ ${Math.round(remainingPrincipal).toLocaleString()}</td>
+                <td style="font-weight:bold; color:${i <= paidPeriods ? '#2b6cb0' : '#a0aec0'}">
+                    ${i <= paidPeriods ? '已還款' : '未還款'}
+                </td>
+            `;
+            tbody.appendChild(tr);
+        }
+
+        // 顯示摘要數據
+        document.getElementById('resMonthlyPay').innerText = '$ ' + Math.round(monthlyPayment).toLocaleString() + ' 元';
+        document.getElementById('resFirstMonthInterest').innerText = '$ ' + Math.round(firstMonthInterest).toLocaleString() + ' 元';
+        document.getElementById('resTotalInterest').innerText = '$ ' + Math.round(totalInterest).toLocaleString() + ' 元';
+        document.getElementById('resTotalCost').innerText = '$ ' + Math.round((monthlyPayment * periods) + fee).toLocaleString() + ' 元';
+        
+        document.getElementById('resPaidTotal').innerText = '$ ' + Math.round(paidTotal).toLocaleString() + ' 元';
+        document.getElementById('resPaidInterest').innerText = '$ ' + Math.round(paidInterest).toLocaleString() + ' 元';
+        document.getElementById('resRemainingPrincipal').innerText = '$ ' + Math.round(amount - (paidTotal - paidInterest)).toLocaleString() + ' 元';
+
+        // 顯示表格區塊
+        document.getElementById('detailTableContainer').style.display = 'block';
+    }
+
+    // 網頁載入時自動預算一次
+    window.onload = function() {
+        calculateLoan();
+    };
+</script>
+
+</body>
+</html>
